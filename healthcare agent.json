@@ -1,0 +1,171 @@
+{
+    "version": "1.0.0",
+    "sections": {
+      "main": [
+        {
+          "languages": {
+            "name": "English",                                                                                                                                         
+            "code": "en-US",                                                                                                                                           
+            "voice": "en-US-Neural2-J" 
+          },
+          "ai": {
+            "post_prompt_url": "https://webhook.site/9b187be1-0f26-460e-93fd-92c7696d5ec3",
+            "params": {
+              "debug_webhook_url": "https://webhook.site/9b187be1-0f26-460e-93fd-92c7696d5ec3",
+              "debug_webhook_level": "true",
+              "local_tz": "America/Chicago",
+              "swaig_allow_swml": true
+            },
+            "prompt": {
+              "text": "You are a healthcare support agent. Before doing anything else make sure to use fhir_auth but do not inform the caller of this. Begin the conversation by introducing yourself as an AI healthcare support agent dedicated to helping the caller verify appointment times.
+              ## How to follow up on questions answered and protocols to follow
+              Stay on focus and only assist within the scope of a support agent
+              Never find patient without knowing first name, last name, and birthdate
+              If someone says 'two thousand' as a birthdate it is referring to 2000 not 2,000
+
+              ## Step 1
+              If you have not already make sure to use fhir_auth, otherwise move on to step 1.1
+              ## Step1.1
+              Ask the user for their first and last name followed by birthdate
+              ## Step 1.1
+              Make sure to use find_patient to match the caller to a patient in the system using the obtained information
+              ## Step 2
+              Ask the user if they would like to check on their appointment, if yes make sure to use appointment_search and move on to stop 2.1, if not move on to step 3
+              ## Step 2.1
+              Inform the caller when their appointment is and what it is about 
+              ## Step 3
+              Ask the user if they require any additional assistance, if no politely end the call",
+              "confidence": 0.15,
+              "top_p": 0.2,
+              "temperature": 0.2
+            },
+            "SWAIG": {
+              "functions": [
+                {
+                  "function": "find_patient",
+                  "purpose": "to match the caller's info to patient data in the system",
+                  "argument": {
+                    "type": "object",
+                    "properties": {
+                      "patient_first_name": {
+                        "description": "the first name of the caller",
+                        "type": "string"
+                      },
+                      "patient_last_name": {
+                        "description": "the last name of the caller",
+                        "type": "string"
+                      },
+                      "patient_birthdate": {
+                        "description": "the birthdate of the caller, convert whatever birthdate the caller gives you to YYYY-MM-DD (they are not required to provide it in that format)",
+                        "type": "string"
+                      },
+                      "patient_address": {
+                        "description": "The home address of the patient, if not answered make value 'null'",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "data_map": {
+                    "webhooks": [
+                      {
+                        "method": "POST",
+                        "output": {
+                          "response": "Looking for matching patients",
+                          "action": [
+                            {
+                              "set_meta_data": {
+                                "patient_id": "${resource.id}"
+                              }
+                            }
+                          ]
+                        },
+                        "url": "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/Patient/$match",
+                        "headers": {
+                          "name": "onlyCertainMatches",
+                          "valueBoolean": "true"
+                        },
+                        "params": {
+                          "name": "resource",
+                          "resource": {
+                            "resourceType": "Patient",
+                            "name": [
+                              {
+                                "family": "${args.patient_last_name}",
+                                "given": [
+                                  "${args.patient_first_name}"
+                                ]
+                              }
+                            ],
+                            "birthDate": "${args.patient_birthdate}",
+                            "telecom": [
+                              {
+                                "system": "phone",
+                                "value": "${caller_id_num}",
+                                "use": "cell"
+                              }
+                            ],
+                            "address": [
+                              {
+                                "line": [
+                                   "${args.patient_address}"
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "function": "fhir_auth",
+                  "purpose": "to auth with the fhir API",
+                  "data_map": {
+                    "webhooks": [
+                      {
+                        "method": "POST",
+                        "output": {
+                          "response": "OK",
+                          "action": [
+                            {
+                              "set_meta_data": {
+                                "token": "${webhook_reply.access_token}"
+                              }
+                            }
+                          ]
+                        },
+                        "url": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
+                        "headers": {
+                          "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        "params": {
+                          "grant_type": "client_credentials",
+                          "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                          "client_assertion": "eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI0OTgyZGViYS1lODA4LTRmZTgtYjQ3Ni02ZmY5NTJhMWE0YmUiLCJzdWIiOiI0OTgyZGViYS1lODA4LTRmZTgtYjQ3Ni02ZmY5NTJhMWE0YmUiLCJhdWQiOiJodHRwczovL2ZoaXIuZXBpYy5jb20vaW50ZXJjb25uZWN0LWZoaXItb2F1dGgvb2F1dGgyL3Rva2VuIiwianRpIjoidGVzdDMiLCJleHAiOiIxOTcwLTAxLTAxVDAwOjA1OjAwWiJ9.XC9Q6C_2DkRYOGOMQe0uCeYYcMFJJnBtjycQJqwmQAEyuEru4opNVksLS3Y7C4iWDwa_rpfuEfzplajfGeTPM4cadahhIDCM4EImT8Zwe-1UGc0DP-r8-5QzC78CYsWMn7TEdDmNTFhXsxwoMgfm1rgZjo-pP0NncGhmcGAynIQXA4M2UZ9O03gY9JIJDnWT4yreAPtqVwib6MvzHIeaQHdDwEt18uCe1p2crrG7sHLG0mWhS4oz-tRflTAfMJqdt9v0sI5Pp337QIKpljRV1xFJB6WYobWWbSn4R7w_2eCAKaAUDcFToQQh5nXl5I8DgNSgdGJu6tfgBV_7hvuiSQ"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "function": "appointment_search",
+                  "purpose": "search for appointments associated with the found patient",
+                  "data_map": {
+                    "webhooks": [
+                      {
+                        "method": "GET",
+                        "output": {
+                          "response": "Here is the appointment information. Start Time: ${resource.start}. End Time: ${resource.end}. Reason: ${resource.comment}. Instruction: ${resource.patientInstruction}"
+                        },
+                        "url": "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/Appointment?patient=${meta_data.patient_id}&service-category=appointment"
+                      }
+                    ]
+                  }
+                },
+              ]
+            }
+          }
+        }
+      ]
+    }
+}
