@@ -9,9 +9,9 @@
             "voice": "en-US-Neural2-J" 
           },
           "ai": {
-            "post_prompt_url": "https://webhook.site/9b187be1-0f26-460e-93fd-92c7696d5ec3",
+            "post_prompt_url": "https://webhook.site/3fa1674e-f369-4c29-9c62-29bf11d79b77",
             "params": {
-              "debug_webhook_url": "https://webhook.site/9b187be1-0f26-460e-93fd-92c7696d5ec3",
+              "debug_webhook_url": "https://webhook.site/3fa1674e-f369-4c29-9c62-29bf11d79b77",
               "debug_webhook_level": "true",
               "local_tz": "America/Chicago",
               "swaig_allow_swml": true
@@ -134,15 +134,7 @@
                             }
                           ]
                         },
-                        "url": "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token",
-                        "headers": {
-                          "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        "params": {
-                          "grant_type": "client_credentials",
-                          "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-                          "client_assertion": "eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI0OTgyZGViYS1lODA4LTRmZTgtYjQ3Ni02ZmY5NTJhMWE0YmUiLCJzdWIiOiI0OTgyZGViYS1lODA4LTRmZTgtYjQ3Ni02ZmY5NTJhMWE0YmUiLCJhdWQiOiJodHRwczovL2ZoaXIuZXBpYy5jb20vaW50ZXJjb25uZWN0LWZoaXItb2F1dGgvb2F1dGgyL3Rva2VuIiwianRpIjoidGVzdDMiLCJleHAiOiIxOTcwLTAxLTAxVDAwOjA1OjAwWiJ9.XC9Q6C_2DkRYOGOMQe0uCeYYcMFJJnBtjycQJqwmQAEyuEru4opNVksLS3Y7C4iWDwa_rpfuEfzplajfGeTPM4cadahhIDCM4EImT8Zwe-1UGc0DP-r8-5QzC78CYsWMn7TEdDmNTFhXsxwoMgfm1rgZjo-pP0NncGhmcGAynIQXA4M2UZ9O03gY9JIJDnWT4yreAPtqVwib6MvzHIeaQHdDwEt18uCe1p2crrG7sHLG0mWhS4oz-tRflTAfMJqdt9v0sI5Pp337QIKpljRV1xFJB6WYobWWbSn4R7w_2eCAKaAUDcFToQQh5nXl5I8DgNSgdGJu6tfgBV_7hvuiSQ"
-                        }
+                        "url": "https://3b25-104-49-75-6.ngrok-free.app/get-token"
                       }
                     ]
                   }
