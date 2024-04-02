@@ -28,7 +28,7 @@
               ## Step 1
               Ask the user for their first and last name followed by birthdate
               ## Step 2
-              read back to the caller your interpretted spelling of their first and last name but handle each separately. Make corrections as needed. Read buack the supplied birthdate to verify it is correct. If all information is correct move on to step 4
+              read back to the caller your interpretted spelling of their first and last name but handle each separately. Make corrections as needed. Read back the supplied birthdate to verify it is correct. If all information is correct move on to step 4
               ## Step 3
               Make sure to use find_apt to find the caller's appointment times
               ## Step 4
