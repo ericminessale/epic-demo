@@ -1,0 +1,106 @@
+{
+    "version": "1.0.0",
+    "sections": {
+      "main": [
+        {
+          "languages": {
+            "name": "English",                                                                                                                                         
+            "code": "en-US",                                                                                                                                           
+            "voice": "en-US-Neural2-J" 
+          },
+          "ai": {
+            "post_prompt_url": "https://webhook.site/de2b9943-adec-4cc5-b065-019405ab032f",
+            "params": {
+              "debug_webhook_url": "https://webhook.site/de2b9943-adec-4cc5-b065-019405ab032f",
+              "debug_webhook_level": "true",
+              "local_tz": "America/Chicago",
+              "swaig_allow_swml": true
+            },
+            "prompt": {
+              "text": "You are a healthcare support agent. Begin the conversation by introducing yourself as an AI healthcare support agent dedicated to helping the caller verify appointment times. 
+              ## How to follow up on questions answered and protocols to follow
+              Stay on focus and only assist within the scope of a support agent
+              Never find patient without knowing first name, last name, and birthdate
+              Never find patient without clarifying the spelling of the caller's name
+              Never find patient if birthdate does not contain a month day and year
+              If someone says 'two thousand' as a birthdate it is referring to 2000 not 2,000
+
+              ## Step 1
+              Ask the user for their first and last name followed by birthdate
+              ## Step 2
+              Clarify the spelling of the first and last name, handle each separately
+              ## Step 3 
+              read back to the caller the supplied information and verify that it is correct
+              ## Step 4
+              Make sure to use find_apt to find the caller's appointment times
+              ## Step 5
+              Inform the caller when their appointment is and what it is about 
+              ## Step 6
+              Ask the user if they require any additional assistance, if no politely end the call",
+              "confidence": 0.15,
+              "top_p": 0.2,
+              "temperature": 0.2
+            },
+            "SWAIG": {
+              "functions": [
+                {
+                  "function": "find_apt",
+                  "purpose": "to match the caller's info to patient data in the system",
+                  "argument": {
+                    "type": "object",
+                    "properties": {
+                      "patient_first_name": {
+                        "description": "the first name of the caller, should match the clarified spelling",
+                        "type": "string"
+                      },
+                      "patient_last_name": {
+                        "description": "the last name of the caller, should match the clarified spelling",
+                        "type": "string"
+                      },
+                      "patient_birthdate": {
+                        "description": "the birthdate of the caller, convert whatever birthdate the caller gives you to YYYY-MM-DD (they are not required to provide it in that format). Must include month day and year",
+                        "type": "string"
+                      },
+                      "patient_address": {
+                        "description": "The home address of the patient, if not answered make value 'null'",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "data_map": {
+                    "webhooks": [
+                      {
+                        "method": "POST",
+                        "output": {
+                          "response": "Looking for appointments",
+                          "action": [
+                            {
+                              "set_meta_data": {
+                                "appointments[]": "${resource.id}"
+                              }
+                            }
+                          ]
+                        },
+                        "url": "https://ce2c-2603-6080-34f0-76e0-dd82-e1b7-2331-b949.ngrok-free.app/",
+                        "params": {
+                          "patient_first_name": "${args.patient_first_name}",
+                          "patient_last_name": "${args.patient_last_name}",
+                          "patient_birthdate": "${args.patient_birthdate}"
+                        },
+                        "foreach": {                                                                                                                                    
+                          "input_key": "dateRanges",                                                                                                                      
+                          "output_key": "availability" ,                                                                                                                           
+                          "max": 2,                                                                                                                                          
+                          "append": "from ${this.start} to ${this.end}, "
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+}
