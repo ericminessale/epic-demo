@@ -99,7 +99,7 @@
                           "patient_last_name": "${args.patient_last_name}",
                           "patient_birthdate": "${args.patient_birthdate}",
                           "address": "${args.patient_address}",
-                          "telecom": "${input.args.caller_id_num}"
+                          "telecom": "${meta_data.caller_id_num}"
                         }
                       }
                     ]
