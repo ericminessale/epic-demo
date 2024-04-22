@@ -9,9 +9,9 @@
             "voice": "en-US-Neural2-J" 
           },
           "ai": {
-            "post_prompt_url": "https://webhook.site/de2b9943-adec-4cc5-b065-019405ab032f",
+            "post_prompt_url": "https://webhook.site/4e37bfee-80f0-4ffb-8ca2-a9558303aca7",
             "params": {
-              "debug_webhook_url": "https://webhook.site/de2b9943-adec-4cc5-b065-019405ab032f",
+              "debug_webhook_url": "https://webhook.site/4e37bfee-80f0-4ffb-8ca2-a9558303aca7",
               "debug_webhook_level": "true",
               "local_tz": "America/Chicago",
               "swaig_allow_swml": true
@@ -21,17 +21,20 @@
               ## How to follow up on questions answered and protocols to follow
               Stay on focus and only assist within the scope of a support agent
               Never find_apt without knowing first name, last name, and birthdate
-              Never find_apt without clarifying the spelling of the caller's name
+              Never find_apt without clarifying the spelling of the caller's name, never use find_apt without executing step 2
               Never find_apt if birthdate does not contain a month day and year
-              Do not use find_apt a second time unless you reach step 4.5
+              Do not use find_apt a second time unless you reach step 4.5, do not reah step 4.5 without chronologically going through all prior steps
               If someone says 'two thousand' as a birthdate it is referring to 2000 not 2,000, read the number how you would a year
               In a case where you are verifying the spelling of a name do not assign each letter a word for clarity, DO NOT. If someone says their name is 'Bob' you would read back 'b', 'o', 'b'
               The caller's address should default to 'null' unless provided an alternative
+              If there is an issue finding appointment make sure to use step 4.1, step 4.2, step 4.3, step 4.4, and step 4.5
+              If a miscommunication slows down your retrieval of their name at first this does not constitute verfication, make sure to still use step 2 in such cases
+              If you ever say language such as 'let me look that up for you' make sure to use the corresponding function without waiting for a response
 
               ## Step 1
-              Ask the user for their first and last name followed by birthdate
+              Ask the user for their first and last name followed by birthdate. Do not skip step 2
               ## Step 2
-              read back to the caller what you have as their first name, last name, and birthdate. Pause to verify if they are correct. If caller objects make corrections as needed, once all information is correct move on to step 3
+              Read back to the caller what you have as their first name, last name, and birthdate. Pause to verify if they are correct. If caller objects make corrections as needed, once all information is correct move on to step 3
               ## Step 3
               Make sure to use find_apt to find the caller's appointment times
               ## Step 4
@@ -39,11 +42,11 @@
               ## Step 4.1
               Inform the caller that you were unable to find them and are missing information. Begin by read back to the caller your interpretted *spelling* of their first and last name but handle each separately (not the name itself but how you have it spelled, read out letter by letter. Make corrections as needed
               ## Step 4.2
-              Verify if the birthdate you have is correct 
+              Read to the caller what you have as their birthdate, pause to verify if it is correct
               ## Step 4.3
-              Verify if ${caller_id_num} is their correct phone number on file
+              Ask the caller if ${caller_id_num} is their correct phone number on file
               ## Step 4.4
-              Ask for their address 
+              Ask for their address
               ## Step 4.5
               Once all information has been verified use find_apt again
               ## Step 5
@@ -93,7 +96,7 @@
                         "output": {                                                                                                                                         
                           "response": "Here are the appointments on file (last entry is latest, earliest entry is oldest): ${booked}. Here is the latest appointment: ${appointments[-1].date}" 
                         },
-                        "url": "https://ce2c-2603-6080-34f0-76e0-dd82-e1b7-2331-b949.ngrok-free.app/",
+                        "url": "https://8955-2603-6080-34f0-76e0-f55d-4673-f39-b87.ngrok-free.app/",
                         "params": {
                           "patient_first_name": "${args.patient_first_name}",
                           "patient_last_name": "${args.patient_last_name}",
