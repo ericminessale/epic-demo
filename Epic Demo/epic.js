@@ -104,46 +104,49 @@ app.post('/', function(req, res) {
 
             const patientData = {
               id: patientResource.id,
-              name: `${patientResource.name[0].given[0]} ${patientResource.name[0].family}`,
+              name: patientResource.name && patientResource.name[0] ? `${patientResource.name[0].given[0]} ${patientResource.name[0].family}` : 'Unknown',
               gender: patientResource.gender,
               birthDate: patientResource.birthDate,
-              address: patientResource.address[0].line.join(', ')
+              address: patientResource.address && patientResource.address[0] ? patientResource.address[0].line.join(', ') : 'Unknown'
             };
 
             console.log('Patient Data:', patientData);
 
-            // get appointments
-            const appointmentUrl = `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/Appointment?patient=${patientData.id}`;
+            if (patientData.id) {
+              const appointmentUrl = `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/Appointment?patient=${patientData.id}`;
 
-            axios.get(appointmentUrl, {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/fhir+json',
-                Accept: 'application/json'
-              }
-            })
-            .then((appointmentResponse) => {
-              const appointments = appointmentResponse.data.entry.map(entry => entry.resource);
-              console.log('Appointments:', appointments);
-              
-              const appointmentData = appointments.map(appointment => ({
-                id: appointment.id,
-                date: appointment.start,
-                status: appointment.status,
-              }));
+              axios.get(appointmentUrl, {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  'Content-Type': 'application/fhir+json',
+                  Accept: 'application/json'
+                }
+              })
+              .then((appointmentResponse) => {
+                const appointments = appointmentResponse.data.entry.map(entry => entry.resource);
+                console.log('Appointments:', appointments);
+                
+                const appointmentData = appointments.map(appointment => ({
+                  id: appointment.id,
+                  date: appointment.start,
+                  status: appointment.status,
+                }));
 
-              // Add appointments to patient data
-              patientData.appointments = appointmentData;
+                patientData.appointments = appointmentData;
 
-              res.status(200).json(patientData); // Send the patient data and appointments
-            })
-            .catch((error) => {
-              console.error('Error fetching appointments:', error);
-              res.status(500).send('Error fetching appointments');
-            });
+                res.status(200).json(patientData); // Send the patient data and appointments
+              })
+              .catch((error) => {
+                console.error('Error fetching appointments:', error);
+                res.status(500).send('Error fetching appointments');
+              });
+            } else {
+              console.log('Patient not found or no data returned.');
+              res.status(404).json({ message: 'Patient not found or no data returned.', patientData: null });
+            }
           } else {
             console.log('Patient not found or no data returned.');
-            res.status(404).json({ error: 'Patient not found or no data returned.' });
+            res.status(404).json({ message: 'Patient not found or no data returned.', patientData: null });
           }
         })
         .catch((error) => {
