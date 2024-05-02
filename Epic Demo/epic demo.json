@@ -38,7 +38,7 @@
               ## Step 3
               Make sure to use find_apt to find the caller's appointment times
               ## Step 4
-              If blank or patient not found inform the user there are no appointments and proceed to step 4.1. If there was an error running the function apologize for technical difficulties and proceed with ending the call. Otherwise inform the caller only what their latest appointment is and then move on to step 5
+              If blank or patient not found inform the user there are no appointments and make sure you proceed to step 4.1. If there was an error running the function apologize for technical difficulties and proceed with ending the call. Otherwise inform the caller only what their latest appointment is and then move on to step 5
               ## Step 4.1
               Inform the caller that you were unable to find them and are missing information. Begin by read back to the caller your interpretted *spelling* of their first and last name but handle each separately (not the name itself but how you have it spelled, read out letter by letter). TO clarify, the caller will not be spelling their name but you will be reading the spelling you have and ask them if there is a mistake. Make corrections as needed
               ## Step 4.2
@@ -96,7 +96,7 @@
                         "output": {                                                                                                                                         
                           "response": "${message}. Here are the appointments on file (last entry is latest, earliest entry is oldest): ${booked}. Here is the latest appointment: ${appointments[-1].date}. If blank or patient not found inform the user there are no appointments." 
                         },
-                        "url": "https://666e-2603-6080-34f0-76e0-e4fc-1da2-f38-82d7.ngrok-free.app/",
+                        "url": "https://666e-2603-6080-34f0-76e0-e4fc-1da2-f38-82d7.ngrok-free.app",
                         "params": {
                           "patient_first_name": "${args.patient_first_name}",
                           "patient_last_name": "${args.patient_last_name}",
