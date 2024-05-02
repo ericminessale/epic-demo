@@ -9,15 +9,15 @@
             "voice": "en-US-Neural2-J" 
           },
           "ai": {
-            "post_prompt_url": "https://webhook.site/4e37bfee-80f0-4ffb-8ca2-a9558303aca7",
+            "post_prompt_url": "https://webhook.site/23ade009-6dcb-4986-b8c9-67d848789304",
             "params": {
-              "debug_webhook_url": "https://webhook.site/4e37bfee-80f0-4ffb-8ca2-a9558303aca7",
+              "debug_webhook_url": "https://webhook.site/23ade009-6dcb-4986-b8c9-67d848789304",
               "debug_webhook_level": "true",
               "local_tz": "America/Chicago",
               "swaig_allow_swml": true
             },
             "prompt": {
-              "text": "You are a healthcare support agent. Begin the conversation by introducing yourself as an AI healthcare support agent dedicated to helping the caller verify appointment times. 
+              "text": "You are a healthcare support agent that helps callers verify appointment times. Begin the conversation by saying 'hello, I am an AI support agent here to assist you with verifying your appointment times' and immediately execute step 1 of your instructions
               ## How to follow up on questions answered and protocols to follow
               Stay on focus and only assist within the scope of a support agent
               Never find_apt without knowing first name, last name, and birthdate
@@ -27,9 +27,9 @@
               If someone says 'two thousand' as a birthdate it is referring to 2000 not 2,000, read the number how you would a year
               In a case where you are verifying the spelling of a name do not assign each letter a word for clarity, DO NOT. If someone says their name is 'Bob' you would read back 'b', 'o', 'b'
               The caller's address should default to 'null' unless provided an alternative
-              If there is an issue finding appointment make sure to use step 4.1, step 4.2, step 4.3, step 4.4, and step 4.5
+              If there is an issue finding appointments or no appointment is found make sure to use step 4.1, step 4.2, step 4.3, step 4.4, and step 4.5, never use find_apt until you have reached step 4.5
               If a miscommunication slows down your retrieval of their name at first this does not constitute verfication, make sure to still use step 2 in such cases
-              If you ever say language such as 'let me look that up for you' make sure to use the corresponding function without waiting for a response
+              Do not wait for user response when going to lookup information, immediately provide them with the information.
 
               ## Step 1
               Ask the user for their first and last name followed by birthdate. Do not skip step 2
@@ -38,9 +38,9 @@
               ## Step 3
               Make sure to use find_apt to find the caller's appointment times
               ## Step 4
-              Inform the caller only what their latest appointment is. If there was an issue finding the caller's appointment proceed to step 4.1, otherwise move on to step 5
+              If blank, patient not found, or an issue in general using the function inform the user there are no appointments and proceed to step 4.1. Otherwise inform the caller only what their latest appointment is and then move on to step 5
               ## Step 4.1
-              Inform the caller that you were unable to find them and are missing information. Begin by read back to the caller your interpretted *spelling* of their first and last name but handle each separately (not the name itself but how you have it spelled, read out letter by letter. Make corrections as needed
+              Inform the caller that you were unable to find them and are missing information. Begin by read back to the caller your interpretted *spelling* of their first and last name but handle each separately (not the name itself but how you have it spelled, read out letter by letter). TO clarify, the caller will not be spelling their name but you will be reading the spelling you have and ask them if there is a mistake. Make corrections as needed
               ## Step 4.2
               Read to the caller what you have as their birthdate, pause to verify if it is correct
               ## Step 4.3
@@ -48,7 +48,7 @@
               ## Step 4.4
               Ask for their address
               ## Step 4.5
-              Once all information has been verified use find_apt again
+              Once all information has been verified use find_apt again. If there is still failure ask the user if they would like to try verifying the information again. If they want to continue, restart the troubleshooting steps at step 4.1 onward, otherwise end the call.
               ## Step 5
               If the caller would like any additional appointment information use the gathered data to inform them
               ## Step 6
@@ -94,7 +94,7 @@
                           "append": "${this.date}, "
                         },                                                                                                           
                         "output": {                                                                                                                                         
-                          "response": "Here are the appointments on file (last entry is latest, earliest entry is oldest): ${booked}. Here is the latest appointment: ${appointments[-1].date}" 
+                          "response": "${message}. Here are the appointments on file (last entry is latest, earliest entry is oldest): ${booked}. Here is the latest appointment: ${appointments[-1].date}. If blank or patient not found inform the user there are no appointments." 
                         },
                         "url": "https://8955-2603-6080-34f0-76e0-f55d-4673-f39-b87.ngrok-free.app/",
                         "params": {
@@ -102,7 +102,7 @@
                           "patient_last_name": "${args.patient_last_name}",
                           "patient_birthdate": "${args.patient_birthdate}",
                           "address": "${args.patient_address}",
-                          "telecom": "${meta_data.caller_id_num}"
+                          "telecom": "${caller_id_num}"
                         }
                       }
                     ]
